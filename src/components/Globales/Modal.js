@@ -12,7 +12,7 @@ const Modal = ({ onClose, children }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-lg font-bold"
+          className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-lg font-bold hover:cursor-pointer"
           onClick={onClose}
         >
           ✕

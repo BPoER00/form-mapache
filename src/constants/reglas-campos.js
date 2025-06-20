@@ -1,22 +1,49 @@
 import { ZodBridge } from "uniforms-bridge-zod";
-import { string, z } from "zod";
+import { z } from "zod";
 
 const schemaReglasPrincipales = new ZodBridge({
-  schema: z.object({
-    label: z.string(),
-    nombre: z.string(),
-    tipo: z.enum([
-      "texto",
-      "numero",
-      "booleano",
-      "fecha",
-      "opciones",
-      "archivo",
-      "email",
-      "switch",
-      "checkbox",
-    ]),
-  }),
+  schema: z
+    .object({
+      label: z.string(),
+      nombre: z.string(),
+      tipo: z.enum([
+        "texto",
+        "numero",
+        "booleano",
+        "fecha",
+        "opciones",
+        "archivo",
+        "email",
+        "switch",
+        "checkbox",
+      ]),
+      nota: z.string(),
+      opciones: z.string().optional(),
+      documentos: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (
+        data.tipo === "opciones" &&
+        (!data.opciones || data.opciones.length === 0)
+      ) {
+        ctx.addIssue({
+          path: ["opciones"],
+          code: z.ZodIssueCode.custom,
+          message: "Debe ingresar al menos una opción.",
+        });
+      }
+
+      if (
+        data.tipo === "archivo" &&
+        (!data.documentos || data.documentos.length === 0)
+      ) {
+        ctx.addIssue({
+          path: ["documentos"],
+          code: z.ZodIssueCode.custom,
+          message: "Debe ingresar al menos un documento.",
+        });
+      }
+    }),
 });
 
 const schemaReglasValidacion = new ZodBridge({
