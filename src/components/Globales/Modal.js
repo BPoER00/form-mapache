@@ -2,12 +2,13 @@ import React from "react";
 
 const Modal = ({ onClose, children }) => {
   return (
-    <div
-      className="fixed inset-0 bg-black opacity-65 flex justify-center items-center z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex justify-center items-center">
+      {/* Fondo oscuro semi-transparente */}
+      <div className="absolute inset-0 bg-black opacity-50" />
+
+      {/* Contenedor del contenido */}
       <div
-        className="bg-white rounded-lg shadow-xl p-6 relative w-10/12 max-w-2xl"
+        className="relative bg-white rounded-lg shadow-xl p-6 w-10/12 max-w-3xl z-10"
         onClick={(e) => e.stopPropagation()}
       >
         <button

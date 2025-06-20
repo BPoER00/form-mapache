@@ -1,0 +1,24 @@
+{
+  "label": "Nombre ejemplo",
+  "nota": "Esta es una nota de ejemplo",
+  "nombre": "Nombre de ejemplo del campo",
+  "tipo": "texto",
+  "valores": "valor1,valor2,valor3",
+  "validaciones": {
+    "requerido": true,
+    "longitud_maxima": 50,
+    "regex": "regex de ejemplo",
+    "mensaje_error": "Este es un mensaje de error de ejemplo"
+  },
+  "dependencias": [
+    {
+      "campo_dependiente": "campo ejemplo",
+      "condicion": "valor",
+      "valor_dependiente": "valor de ejemplo"
+    }
+  ],
+  "posicionamiento": {
+    "columnas": 4,
+    "columnasOffset": 0
+  }
+}
