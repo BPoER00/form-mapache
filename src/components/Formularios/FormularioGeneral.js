@@ -7,6 +7,7 @@ const FormularioGeneral = ({ configuracion, setConfiguracion, closeModal }) => {
   const [valores, setValores] = useState({});
 
   const onSubmit = () => {
+    console.log(valores);
     setConfiguracion((prev) => [...prev, valores]);
     closeModal(false);
   };
@@ -38,6 +39,8 @@ const FormularioGeneral = ({ configuracion, setConfiguracion, closeModal }) => {
             setValores={setValores}
             titulo={currentTab.nombre}
             schema={currentTab.schema}
+            campos={currentTab.camposFijos}
+            extras={currentTab.camposExtras}
           />
         )}
       </article>

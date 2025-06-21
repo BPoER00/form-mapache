@@ -1,6 +1,20 @@
 import { ZodBridge } from "uniforms-bridge-zod";
 import { z } from "zod";
 
+const camposFijosReglasPrincipales = [
+  "label",
+  "nombre",
+  "tipo",
+  "nota",
+  "holder",
+];
+
+const camposFijosReglasValidacion = ["requerido", "minimo", "maximo", "regex"];
+
+const camposFijosReglasDependencias = ["reglas"];
+
+const camposFijosReglasPosicionamiento = ["columna", "columnaOffset"];
+
 const schemaReglasPrincipales = new ZodBridge({
   schema: z
     .object({
@@ -14,10 +28,9 @@ const schemaReglasPrincipales = new ZodBridge({
         "opciones",
         "archivo",
         "email",
-        "switch",
-        "checkbox",
       ]),
       nota: z.string(),
+      holder: z.string().optional(),
       opciones: z.string().optional(),
       documentos: z.string().optional(),
     })
@@ -48,25 +61,30 @@ const schemaReglasPrincipales = new ZodBridge({
 
 const schemaReglasValidacion = new ZodBridge({
   schema: z.object({
-    requerido: z.boolean().optional(),
-    minimo: z.number().optional(),
-    maximo: z.number().optional(),
+    requerido: z.oboolean(),
+    minimo: z.number().int().optional(),
+    maximo: z.number().int().optional(),
     regex: z.string().optional(),
+    mensajeError: z.string().optional(),
   }),
+});
+
+const reglaSchema = z.object({
+  valor: z.string().optional(),
+  condicion: z.enum(["igual", "diferente", "mayor", "menor"]),
+  campo: z.string().optional(),
 });
 
 const schemaDependencias = new ZodBridge({
   schema: z.object({
-    valor: z.string(),
-    condicion: z.enum(["igual", "diferente", "mayor", "menor"]),
-    campo: z.string(),
+    reglas: z.array(reglaSchema),
   }),
 });
 
 const schemaPosicionamiento = new ZodBridge({
   schema: z.object({
-    columna: z.number(),
-    columnaOfset: z.number().optional(),
+    columna: z.number().int(),
+    columnaOffset: z.number().int().optional(),
   }),
 });
 
@@ -75,21 +93,29 @@ const TABS = [
     valor: "Principales",
     nombre: "Campos Principales",
     schema: schemaReglasPrincipales,
+    camposFijos: camposFijosReglasPrincipales,
+    camposExtras: true,
   },
   {
     valor: "Validacion",
     nombre: "Validacion",
     schema: schemaReglasValidacion,
+    camposFijos: camposFijosReglasValidacion,
+    camposExtras: false,
   },
   {
     valor: "Dependencias",
     nombre: "Dependencias",
     schema: schemaDependencias,
+    camposFijos: camposFijosReglasDependencias,
+    camposExtras: false,
   },
   {
     valor: "Posicionamiento",
     nombre: "Posicionamiento",
     schema: schemaPosicionamiento,
+    camposFijos: camposFijosReglasPosicionamiento,
+    camposExtras: false,
   },
 ];
 
