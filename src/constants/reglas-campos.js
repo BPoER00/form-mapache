@@ -88,6 +88,14 @@ const schemaPosicionamiento = new ZodBridge({
   }),
 });
 
+const schemaCamposGenerales = new ZodBridge({
+  "tramite-id": z.number().int(),
+  nombre: z.string(),
+  institucion: z.object({
+    id: z.string(),
+  }),
+});
+
 const TABS = [
   {
     valor: "Principales",
@@ -119,4 +127,4 @@ const TABS = [
   },
 ];
 
-export { TABS };
+export { TABS, schemaCamposGenerales };

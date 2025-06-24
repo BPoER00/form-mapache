@@ -1,24 +1,382 @@
 {
-  "label": "Nombre ejemplo",
-  "nota": "Esta es una nota de ejemplo",
-  "nombre": "Nombre de ejemplo del campo",
-  "tipo": "texto",
-  "valores": "valor1,valor2,valor3",
-  "validaciones": {
-    "requerido": true,
-    "longitud_maxima": 50,
-    "regex": "regex de ejemplo",
-    "mensaje_error": "Este es un mensaje de error de ejemplo"
-  },
-  "dependencias": [
+  "id": "00118754-313a-402a-a00e-82f2538f9195",
+  "tramite-id": 602,
+  "institucion": [],
+  "steps": [
     {
-      "campo_dependiente": "campo ejemplo",
-      "condicion": "valor",
-      "valor_dependiente": "valor de ejemplo"
+      "label": "Asunto",
+      "nombre": "asunto",
+      "nota": "Ingrese opcion",
+      "tipo": "opciones",
+      "valores": "Solicitud de ayuda social",
+      "grupo": "tramites",
+      "placeholder": "Seleccione una opcion",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": "Debe seleccionar una opción válida"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Nombre Completo",
+      "nombre": "nombre",
+      "nota": "",
+      "tipo": "texto",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su nombre completo",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "5",
+        "longitud_maxima": "100",
+        "regex": "",
+        "mensaje_error": "Este campo es obligatorio"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Codigo Unico de Identificacion (CUI)",
+      "nombre": "dpi",
+      "nota": "",
+      "tipo": "dpi",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su dpi",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "5",
+        "longitud_maxima": "15",
+        "regex": "^\\d{4}\\s\\d{5}\\s\\d{4}$",
+        "mensaje_error": "Este campo es obligatorio"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Telefono",
+      "nombre": "telefono",
+      "nota": "",
+      "tipo": "telefono",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su telefono",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "8",
+        "longitud_maxima": "10",
+        "regex": "^\\d{4}\\s\\d{4}$",
+        "mensaje_error": "Este campo es obligatorio"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Correo Electronico",
+      "nombre": "correo-electronico",
+      "nota": "",
+      "tipo": "correo-electronico",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su correo electronico",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "8",
+        "longitud_maxima": "50",
+        "regex": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+        "mensaje_error": "Este campo es obligatorio"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 4
+      }
+    },
+    {
+      "label": "Comunidad",
+      "nombre": "comunidad",
+      "nota": "",
+      "tipo": "texto",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su comunidad",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "0",
+        "longitud_maxima": "100",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 6,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Oficina",
+      "nombre": "oficina",
+      "nota": "",
+      "tipo": "texto",
+      "valores": "",
+      "grupo": "tramites",
+      "placeholder": "Ingrese su Oficina",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "0",
+        "longitud_maxima": "100",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 6,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Zona",
+      "nombre": "zona",
+      "nota": "",
+      "tipo": "opciones",
+      "valores": "1,2,3,4,5,6,7",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su zona",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Institucion/Vecino",
+      "nombre": "institucion-vecino",
+      "nota": "",
+      "tipo": "opciones",
+      "valores": "Institucion,Vecino",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su informacion",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Sexo",
+      "nombre": "sexo",
+      "nota": "",
+      "tipo": "genero",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su sexo",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Rango de Edad",
+      "nombre": "edad",
+      "nota": "",
+      "tipo": "edad",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su edad",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Etnia",
+      "nombre": "etnia",
+      "nota": "",
+      "tipo": "etnia",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su etnia",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Comunidad Linguistica",
+      "nombre": "comunidad-linguistica",
+      "nota": "",
+      "tipo": "comunidad-linguistica",
+      "valores": "",
+      "grupo": "datosPersonales",
+      "placeholder": "Ingrese su comunidad linguistica",
+      "otros": false,
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 4,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Accion",
+      "nombre": "accion-solicitud-usuario",
+      "nota": "",
+      "tipo": "carrito",
+      "valores": "Lamina,Medicina,Transporte,Alimento",
+      "grupo": "tramites",
+      "placeholder": "Seleccione una opcion",
+      "otros": true,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": "Debe seleccionar una opción válida"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 12,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Dirección exacta y una Referencia del Lugar",
+      "nombre": "direccion-solicitud-ayuda-social",
+      "nota": "",
+      "tipo": "area-text",
+      "valores": "",
+      "grupo": "tramites",
+      "placeholder": "Ingrese la dirección exacta y una referencia del lugar",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "5",
+        "longitud_maxima": "255",
+        "regex": "",
+        "mensaje_error": "Ingrese una dirección"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 12,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Motivo de la Solicitud",
+      "nombre": "motivo-solicitud-ayuda-social",
+      "nota": "",
+      "tipo": "area-text",
+      "valores": "",
+      "grupo": "tramites",
+      "placeholder": "Ingrese el motivo de la solicitud",
+      "otros": false,
+      "validaciones": {
+        "requerido": true,
+        "longitud_minima": "5",
+        "longitud_maxima": "255",
+        "regex": "",
+        "mensaje_error": "Ingrese un motivo para realizar la solicitud"
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 12,
+        "columnasOffset": 0
+      }
+    },
+    {
+      "label": "Adjuntar documentos",
+      "nombre": "adjuntos",
+      "nota": "ingrese documentos que respalden la solicitud",
+      "tipo": "archivo-zone",
+      "valores": "",
+      "grupo": "requisitos",
+      "placeholder": "Ingrese documentos que respalden la solicitud",
+      "otros": false,
+      "documentos": "png,jpg,pdf,txt",
+      "validaciones": {
+        "requerido": false,
+        "longitud_minima": "none",
+        "longitud_maxima": "none",
+        "regex": "",
+        "mensaje_error": ""
+      },
+      "dependencias": [],
+      "posicionamiento": {
+        "columnas": 12,
+        "columnasOffset": 0
+      }
     }
-  ],
-  "posicionamiento": {
-    "columnas": 4,
-    "columnasOffset": 0
-  }
+  ]
 }

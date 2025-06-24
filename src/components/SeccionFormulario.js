@@ -6,7 +6,6 @@ const SeccionFormulario = () => {
   const [showModal, setShowModal] = useState(false);
   const [configuracionTramite, setConfiguracionTramites] = useState([]);
 
-  console.log(configuracionTramite);
   return (
     <section className="w-10/12 flex flex-col justify-center items-center mx-auto my-10 gap-10">
       <hgroup className="w-full border border-gray-300 rounded-lg p-6 shadow-lg bg-white">
