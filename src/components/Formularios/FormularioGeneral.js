@@ -1,18 +1,44 @@
 import React, { useState } from "react";
 import ConfiguracionCampos from "./ConfiguracionCampos";
 import { TABS } from "@/constants/reglas-campos";
+import { useNotification } from "@/contexts/Notify";
 
 const FormularioGeneral = ({
   configuracion,
   setConfiguracion,
   closeModal,
   valoresEditar,
+  indexConfigure,
 }) => {
   const [tab, setTab] = useState("Principales");
-  const [valores, setValores] = useState({});
+  const [valores, setValores] = useState(valoresEditar || {});
+  const { addNotification } = useNotification();
 
   const onSubmit = () => {
-    setConfiguracion((prev) => [...prev, valores]);
+    const { index, setIndex } = indexConfigure;
+
+    if (index !== null && index !== undefined) {
+      setConfiguracion((prev) => {
+        const newConfig = [...prev];
+        newConfig[index] = valores;
+        return newConfig;
+      });
+
+      const newConfiguracion = [...configuracion];
+      newConfiguracion[index] = valores;
+      localStorage.setItem("campos-valores", JSON.stringify(newConfiguracion));
+
+      addNotification("Campo Editado Correctamente", "success");
+      setIndex(null);
+    } else {
+      setConfiguracion((prev) => [...prev, valores]);
+      localStorage.setItem(
+        "campos-valores",
+        JSON.stringify([...configuracion, valores])
+      );
+      addNotification("Campo Agregado Correctamente", "success");
+    }
+
     closeModal(false);
   };
 

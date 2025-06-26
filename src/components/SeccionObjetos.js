@@ -1,32 +1,31 @@
-"use client";
-import { tramites, instituciones } from "@/constants/objetos";
-import { getAll } from "@/services/Configure-Memory";
-import React, { useEffect, useState } from "react";
+import { objetos } from "@/constants/objetos";
+import { getAll, post, put } from "@/services/Configure-Memory";
+import { useEffect, useState } from "react";
 import Modal from "./Globales/Modal";
-import TramiteIniciar from "./UI/TramiteIniciar";
-import { useRouter } from "next/navigation";
+import ConfiguracionCampos from "./Formularios/ConfiguracionCampos";
+import { camposObjetos, schemasCamposObjetos } from "@/constants/reglas-campos";
+import { useNotification } from "@/contexts/Notify";
+import { ordenObjeto } from "@/helpers/ordenar-datos";
 
-const SeccionTramites = () => {
-  const router = useRouter();
+const SeccionObjetos = () => {
+  const { addNotification } = useNotification();
   const [listado, setListado] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [filtroTexto, setFiltroTexto] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("todos");
   const [showModal, setShowModal] = useState(false);
-  const [showModalTramiteNuevo, setShowModalTramiteNuevo] = useState(false);
-  const [tramiteSeleccionado, setTramiteSeleccionado] = useState(null);
-  const [institucionesList, setInstitucionesList] = useState([]);
+  const [showModalOpciones, setShowModalOpciones] = useState(false);
+  const [filtroEstado, setFiltroEstado] = useState("todos");
+  const [valores, setValores] = useState({});
+  const [opciones, setOpciones] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
 
     const fetchData = async () => {
-      const result = await getAll(tramites);
-      const institucionesData = await getAll(instituciones);
+      const result = await getAll(objetos);
 
       if (isMounted) {
         setListado(result);
-        setInstitucionesList(institucionesData);
         setIsLoading(false);
       }
     };
@@ -38,9 +37,9 @@ const SeccionTramites = () => {
   }, []);
 
   const listadoFiltrado = listado.filter((item) => {
-    const coincideTexto =
-      item["tramite-id"]?.toString().includes(filtroTexto.toLowerCase()) ||
-      item.nombre?.toLowerCase().includes(filtroTexto.toLowerCase());
+    const coincideTexto = item.nombre
+      ?.toLowerCase()
+      .includes(filtroTexto.toLowerCase());
 
     const coincideEstado =
       filtroEstado === "todos" ||
@@ -50,39 +49,58 @@ const SeccionTramites = () => {
     return coincideTexto && coincideEstado;
   });
 
-  const abrirModalInstituciones = (tramite) => {
-    setTramiteSeleccionado(tramite);
+  const handleOpenModal = () => {
     setShowModal(true);
   };
 
-  const obtenerInstitucionesAsignadas = (ids) => {
-    if (!Array.isArray(ids)) return [];
-    return ids
-      .map((id) => institucionesList.find((inst) => inst.id === id))
-      .filter(Boolean);
+  const onSubmit = async () => {
+    const errores = [];
+
+    if (!("estado" in valores)) {
+      setValores((prev) => ({ ...prev, estado: false }));
+    }
+
+    if (!("otros" in valores)) {
+      setValores((prev) => ({ ...prev, otros: false }));
+    }
+
+    if (!valores.nombre || valores.nombre.trim() === "") {
+      errores.push("El campo 'nombre' es obligatorio.");
+    }
+
+    if (
+      !valores.opciones ||
+      !Array.isArray(valores.opciones) ||
+      valores.opciones.length === 0
+    ) {
+      errores.push("Debe asignar al menos una opcion.");
+    }
+
+    if (errores.length > 0) {
+      errores.forEach((error) => addNotification(error, "warning"));
+      return;
+    }
+
+    if (valores.id) {
+      await put(objetos, valores, "id", valores.id);
+      addNotification("Objeto editado correctamente", "success");
+    } else {
+      const resultObject = ordenObjeto(valores);
+      await post(objetos, resultObject);
+      addNotification("Objeto guardado correctamente", "success");
+    }
+
+    setShowModal(false);
   };
 
-  const handleOpenModal = () => {
-    setShowModalTramiteNuevo(true);
+  const abrirModalOpciones = (opciones) => {
+    setShowModalOpciones(true);
+    setOpciones(opciones);
   };
 
-  const handleEditTramite = (tramite) => {
-    const { steps, ...data } = tramite;
-    const idTramite = tramite["tramite-id"];
-
-    const institucionesConNombre = data.institucion.map((id) => {
-      const institucion = institucionesList.find((obj) => obj.id === id);
-      return institucion ? institucion.label : idTramite;
-    });
-
-    const result = {
-      ...data,
-      institucion: institucionesConNombre,
-    };
-
-    localStorage.setItem("campos-valores", JSON.stringify(steps));
-    localStorage.setItem("tramite-valores", JSON.stringify(result));
-    router.push(`tramites/${idTramite}`);
+  const handleEditarObjeto = (tramite) => {
+    setValores(tramite);
+    setShowModal(true);
   };
 
   return (
@@ -119,7 +137,7 @@ const SeccionTramites = () => {
             onClick={handleOpenModal}
             className="border border-gray-300 hover:bg-gray-300 hover:cursor-pointer transition ease-in-out duration-1000 rounded px-3 py-2 w-full md:w-1/10"
           >
-            Nuevo Tramite
+            Nuevo Objeto
           </button>
         </div>
 
@@ -135,12 +153,6 @@ const SeccionTramites = () => {
                   <tr>
                     <th
                       scope="col"
-                      className="py-3.5 pr-3 pl-4 text-left text-sm font-semibold text-gray-900 sm:pl-0"
-                    >
-                      Trámite ID
-                    </th>
-                    <th
-                      scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
                       Nombre
@@ -149,7 +161,13 @@ const SeccionTramites = () => {
                       scope="col"
                       className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                     >
-                      Instituciones
+                      Opciones
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Otros
                     </th>
                     <th
                       scope="col"
@@ -168,26 +186,26 @@ const SeccionTramites = () => {
                 <tbody className="divide-y divide-gray-200">
                   {listadoFiltrado.map((item, index) => (
                     <tr key={index}>
-                      <td className="py-4 pr-3 pl-4 text-sm font-medium whitespace-nowrap text-gray-900 sm:pl-0">
-                        {item["tramite-id"]}
-                      </td>
                       <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
                         {item.nombre}
                       </td>
                       <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
                         <button
                           className="text-indigo-600 hover:text-indigo-900 hover:cursor-pointer"
-                          onClick={() => abrirModalInstituciones(item)}
+                          onClick={() => abrirModalOpciones(item)}
                         >
-                          Ver Instituciones Asignada
+                          Ver Opciones
                         </button>
+                      </td>
+                      <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+                        Agregar otros: {item.otros ? "Activo" : "Inactivo"}
                       </td>
                       <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
                         {item.estado ? "Activo" : "Inactivo"}
                       </td>
                       <td className="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
                         <button
-                          onClick={() => handleEditTramite(item)}
+                          onClick={() => handleEditarObjeto(item)}
                           className="text-indigo-600 hover:text-indigo-900 hover:cursor-pointer"
                         >
                           Editar
@@ -204,67 +222,64 @@ const SeccionTramites = () => {
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
-          <h2 className="text-lg font-semibold mb-4">
-            Instituciones Asignadas
-          </h2>
+          <h2 className="text-lg font-semibold mb-4">Cree su objeto</h2>
 
-          {tramiteSeleccionado?.institucion?.length > 0 ? (
-            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                      Nombre
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                      Tipo
-                    </th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900">
-                      Estado
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {obtenerInstitucionesAsignadas(
-                    tramiteSeleccionado.institucion
-                  ).map((inst, index) => (
-                    <tr key={index}>
-                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
-                        {inst.nombre}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
-                        {inst.tipo}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
-                        {inst.estado ? (
-                          <span className="text-green-600 font-medium">
-                            Activa
-                          </span>
-                        ) : (
-                          <span className="text-red-500 font-medium">
-                            Inactiva
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p>No tiene instituciones asignadas.</p>
-          )}
+          <section className="w-full h-auto max-h-96 overflow-y-auto border border-gray-300 rounded-md p-3">
+            <ConfiguracionCampos
+              setValores={setValores}
+              titulo={"Campos para objetos"}
+              schema={camposObjetos}
+              campos={schemasCamposObjetos}
+              camposExtras={false}
+              values={valores}
+            />
+          </section>
+
+          <button
+            type="button"
+            className="w-full hover:cursor-pointer bg-blue-800 text-white p-2 rounded-lg transition duration-300 ease-in-out hover:bg-blue-700"
+            onClick={onSubmit}
+          >
+            Guardar Configuración
+          </button>
         </Modal>
       )}
 
-      {showModalTramiteNuevo && (
-        <TramiteIniciar
-          setShowModalTramiteNuevo={setShowModalTramiteNuevo}
-          instituciones={institucionesList}
-        />
+      {showModalOpciones && (
+        <Modal onClose={() => setShowModalOpciones(false)}>
+          <h2 className="text-lg font-semibold mb-4">
+            Listado de opciones: {opciones.nombre}
+          </h2>
+          <section className="w-full h-auto max-h-96 overflow-y-auto border border-gray-300 rounded-md p-3">
+            {opciones?.opciones?.length > 0 ? (
+              <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
+                <table className="min-w-full divide-y divide-gray-300">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-3 text-gray-900 text-center font-bold text-md">
+                        nombre
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {opciones.opciones.map((item, index) => (
+                      <tr key={index}>
+                        <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap text-center">
+                          {item.trim() === "" ? "-- vacío --" : item}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p>No tiene opciones asignadas.</p>
+            )}
+          </section>
+        </Modal>
       )}
     </section>
   );
 };
 
-export default SeccionTramites;
+export default SeccionObjetos;

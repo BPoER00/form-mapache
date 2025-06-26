@@ -14,6 +14,8 @@ const SeccionFormulario = () => {
   const [showModalTramiteNuevo, setShowModalTramiteNuevo] = useState(false);
   const [institucionesList, setInstitucionesList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [dataGeneral, setDataGeneral] = useState({});
+  const [index, setIndex] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,15 +34,25 @@ const SeccionFormulario = () => {
     };
 
     const checkTramiteValores = () => {
-      const data = localStorage.getItem("tramite-valores");
+      const dataGeneralLocalStorage = localStorage.getItem("tramite-valores");
+      const dataCamposLocalStorage = localStorage.getItem("campos-valores");
 
-      if (data) {
+      if (dataGeneralLocalStorage) {
         try {
-          const parsed = JSON.parse(data);
-          const hasSixKeys = Object.keys(parsed).length === 6;
+          const parsedDataGeneral = JSON.parse(dataGeneralLocalStorage);
+          const parsedDataCampos = JSON.parse(dataCamposLocalStorage);
+          const hasSixKeys = Object.keys(parsedDataGeneral).length === 4 || 5;
 
           if (isMounted) {
             setShowModalTramiteNuevo(!hasSixKeys);
+          }
+
+          if (hasSixKeys) {
+            setDataGeneral(parsedDataGeneral);
+          }
+
+          if (parsedDataCampos) {
+            setConfiguracionTramites(parsedDataCampos);
           }
         } catch (e) {
           console.warn("Error al parsear tramite-valores:", e);
@@ -60,12 +72,13 @@ const SeccionFormulario = () => {
     };
   }, []);
 
-  const handleEditarCampo = (campos) => {
+  const handleEditarCampo = (campos, index) => {
+    setIndex(index);
     setValues(campos);
     setShowModal(true);
   };
 
-  const handleEliminarCampo = async (campos) => {
+  const handleEliminarCampo = async (campos, index) => {
     const result = await addNotification(
       "¿Estás seguro de querer eliminar, se perdera el orden con las columnas que se han configurado?",
       "question"
@@ -73,12 +86,37 @@ const SeccionFormulario = () => {
 
     if (result) {
       addNotification(`el campo: ${campos.label}, fue eliminado`);
-      setConfiguracionTramites((prevCampos) =>
-        prevCampos.filter((campo) => campo.nombre !== campos.nombre)
-      );
+      setConfiguracionTramites((prevCampos) => {
+        const nuevosCampos = prevCampos.filter(
+          (campo) => campo.nombre !== campos.nombre
+        );
+
+        // Actualizar localStorage
+        localStorage.setItem("campos-valores", JSON.stringify(nuevosCampos));
+
+        return nuevosCampos;
+      });
     }
   };
 
+  const handleEditarCamposGenerales = () => {
+    setShowModalTramiteNuevo(true);
+  };
+
+  const handleFinalizarTramite = () => {
+    const camposGeneralesTramite = localStorage.getItem("tramite-valores");
+    const camposTramite = localStorage.getItem("campos-valores");
+
+    const jsonCamposGenerales = JSON.parse(camposGeneralesTramite);
+    const jsonCamposTramite = JSON.parse(camposTramite);
+
+    const result = {
+      ...jsonCamposGenerales,
+      steps: jsonCamposTramite,
+    };
+
+    console.log(result);
+  };
   return (
     <section className="w-10/12 flex flex-col justify-center items-center mx-auto my-10 gap-10">
       <hgroup className="w-full border border-gray-300 rounded-lg p-6 shadow-lg bg-white">
@@ -87,6 +125,21 @@ const SeccionFormulario = () => {
         </h1>
         <span>Dudas puedes consultar en el grupo</span>
       </hgroup>
+
+      <section className="w-10/12 flex justify-center items-center mx-auto my-10 bg-white border border-gray-300 rounded-lg p-6 gap-4">
+        <h3 className="text-xl text-center">
+          Para editar campos generales del tramite
+        </h3>
+
+        <button
+          type="button"
+          onClick={() => handleEditarCamposGenerales(true)}
+          className="text-xl bg-amber-300 rounded-full p-2 text-white hover:bg-amber-700 transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
+        >
+          <img src="/svg/plus-icon.svg" className="w-5 h-5" alt="plus" />
+          <span>Editar Campos Generales</span>
+        </button>
+      </section>
 
       {configuracionTramite.length > 0 && (
         <section className="w-10/12 flex flex-col items-start mx-auto my-10 bg-white border border-gray-300 rounded-lg p-6 gap-4">
@@ -113,14 +166,14 @@ const SeccionFormulario = () => {
                   <td className="py-2 px-4 flex gap-2">
                     <button
                       type="button"
-                      onClick={() => handleEditarCampo(campo)}
+                      onClick={() => handleEditarCampo(campo, index)}
                       className="text-blue-600 hover:underline text-sm"
                     >
                       Editar
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleEliminarCampo(campo)}
+                      onClick={() => handleEliminarCampo(campo, index)}
                       className="text-red-600 hover:underline text-sm"
                     >
                       Eliminar
@@ -167,16 +220,27 @@ const SeccionFormulario = () => {
             setConfiguracion={setConfiguracionTramites}
             closeModal={setShowModal}
             valoresEditar={values}
+            indexConfigure={{ index, setIndex }}
           />
         </Modal>
       )}
 
-      {!showModalTramiteNuevo && (
+      {showModalTramiteNuevo && (
         <TramiteIniciar
           setShowModalTramiteNuevo={setShowModalTramiteNuevo}
           instituciones={institucionesList}
+          modelo={dataGeneral}
+          redirigir={false}
         />
       )}
+
+      <button
+        type="button"
+        onClick={() => handleFinalizarTramite(true)}
+        className="text-xl bg-green-500 rounded-full p-2 text-white hover:bg-amber-700 transition duration-300 ease-in-out flex items-center gap-2 hover:cursor-pointer"
+      >
+        <span>Finalizar configuracion tramite</span>
+      </button>
     </section>
   );
 };

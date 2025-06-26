@@ -1,5 +1,5 @@
 import { ZodBridge } from "uniforms-bridge-zod";
-import { z } from "zod";
+import { object, z } from "zod";
 
 const camposFijosReglasPrincipales = [
   "label",
@@ -18,11 +18,11 @@ const camposFijosReglasPosicionamiento = ["columna", "columnaOffset"];
 const camposFijosReglasGenerales = [
   "tramite-id",
   "nombre",
-  "label",
-  "slug",
   "estado",
   "institucion",
 ];
+
+const schemasCamposObjetos = ["nombre", "otros", "estado", "opciones"];
 
 const schemaReglasPrincipales = new ZodBridge({
   schema: z
@@ -102,8 +102,6 @@ const camposGeneralesReglaSchemas = (instituciones) => {
     schema: z.object({
       "tramite-id": z.number().int(),
       nombre: z.string(),
-      label: z.string(),
-      slug: z.string(),
       estado: z.boolean(),
       institucion: z.array(z.enum(instituciones)),
     }),
@@ -111,6 +109,15 @@ const camposGeneralesReglaSchemas = (instituciones) => {
 
   return schemaCamposGenerales;
 };
+
+const camposObjetos = new ZodBridge({
+  schema: z.object({
+    nombre: z.string(),
+    otros: z.boolean(),
+    estado: z.boolean(),
+    opciones: z.array(z.string()),
+  }),
+});
 
 const TABS = [
   {
@@ -143,4 +150,10 @@ const TABS = [
   },
 ];
 
-export { TABS, camposGeneralesReglaSchemas, camposFijosReglasGenerales };
+export {
+  TABS,
+  camposGeneralesReglaSchemas,
+  camposFijosReglasGenerales,
+  camposObjetos,
+  schemasCamposObjetos,
+};

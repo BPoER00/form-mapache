@@ -8,11 +8,16 @@ import {
 } from "@/constants/reglas-campos";
 import { useNotification } from "@/contexts/Notify";
 
-const TramiteIniciar = ({ setShowModalTramiteNuevo, instituciones }) => {
+const TramiteIniciar = ({
+  setShowModalTramiteNuevo,
+  instituciones,
+  modelo,
+  redirigir = true,
+}) => {
   const [loadingRedirect, setLoadingRedirect] = useState(false);
   const router = useRouter();
   const { addNotification } = useNotification();
-  const [valores, setValores] = useState([]);
+  const [valores, setValores] = useState(modelo || {});
 
   const labels = instituciones.map((i) => i.label);
 
@@ -29,14 +34,6 @@ const TramiteIniciar = ({ setShowModalTramiteNuevo, instituciones }) => {
 
     if (!valores.nombre || valores.nombre.trim() === "") {
       errores.push("El campo 'nombre' es obligatorio.");
-    }
-
-    if (!valores.label || valores.label.trim() === "") {
-      errores.push("El campo 'label' es obligatorio.");
-    }
-
-    if (!valores.slug || valores.slug.trim() === "") {
-      errores.push("El campo 'slug' es obligatorio.");
     }
 
     if (typeof valores.estado !== "boolean") {
@@ -56,18 +53,25 @@ const TramiteIniciar = ({ setShowModalTramiteNuevo, instituciones }) => {
       return;
     }
 
+    if (redirigir) {
+      addNotification("Trámite guardado correctamente", "success");
+
+      addNotification(
+        "Se le redigira a otra pagina para la continuacion de Ingreso de los campos",
+        "info"
+      );
+
+      setLoadingRedirect(true);
+
+      setTimeout(() => {
+        router.push(`/tramites/${valores["tramite-id"]}`);
+      }, 2500);
+    } else {
+      addNotification("Trámite actualizado correctamente", "success");
+      setShowModalTramiteNuevo(false);
+    }
+
     localStorage.setItem("tramite-valores", JSON.stringify(valores));
-    addNotification("Trámite guardado correctamente", "success");
-    addNotification(
-      "Se le redigira a otra pagina para la continuacion de Ingreso de los campos",
-      "info"
-    );
-
-    setLoadingRedirect(true);
-
-    setTimeout(() => {
-      router.push(`/tramites/${valores["tramite-id"]}`);
-    }, 2500);
   };
 
   if (loadingRedirect) {
@@ -97,6 +101,7 @@ const TramiteIniciar = ({ setShowModalTramiteNuevo, instituciones }) => {
             schema={camposGeneralesReglaSchemas(labels)}
             campos={camposFijosReglasGenerales}
             camposExtras={false}
+            values={modelo}
           />
         </article>
 
