@@ -1,24 +1,82 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "./Globales/Modal";
 import FormularioGeneral from "./Formularios/FormularioGeneral";
 import { useNotification } from "@/contexts/Notify";
+import { instituciones } from "@/constants/objetos";
+import { getAll } from "@/services/Configure-Memory";
+import TramiteIniciar from "./UI/TramiteIniciar";
 
 const SeccionFormulario = () => {
   const { addNotification } = useNotification();
   const [showModal, setShowModal] = useState(false);
   const [configuracionTramite, setConfiguracionTramites] = useState([]);
   const [values, setValues] = useState({});
+  const [showModalTramiteNuevo, setShowModalTramiteNuevo] = useState(false);
+  const [institucionesList, setInstitucionesList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchData = async () => {
+      try {
+        const institucionesData = await getAll(instituciones);
+
+        if (isMounted) {
+          setInstitucionesList(institucionesData);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error al cargar datos:", error);
+      }
+    };
+
+    const checkTramiteValores = () => {
+      const data = localStorage.getItem("tramite-valores");
+
+      if (data) {
+        try {
+          const parsed = JSON.parse(data);
+          const hasSixKeys = Object.keys(parsed).length === 6;
+
+          if (isMounted) {
+            setShowModalTramiteNuevo(!hasSixKeys);
+          }
+        } catch (e) {
+          console.warn("Error al parsear tramite-valores:", e);
+        }
+      } else {
+        if (isMounted) {
+          setShowModalTramiteNuevo(true);
+        }
+      }
+    };
+
+    fetchData();
+    checkTramiteValores();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleEditarCampo = (campos) => {
     setValues(campos);
     setShowModal(true);
   };
 
-  const handleEliminarCampo = (campos) => {
-    addNotification(`el campo: ${campos.label}, fue eliminado`);
-    setConfiguracionTramites((prevCampos) =>
-      prevCampos.filter((campo) => campo.nombre !== campos.nombre)
+  const handleEliminarCampo = async (campos) => {
+    const result = await addNotification(
+      "¿Estás seguro de querer eliminar, se perdera el orden con las columnas que se han configurado?",
+      "question"
     );
+
+    if (result) {
+      addNotification(`el campo: ${campos.label}, fue eliminado`);
+      setConfiguracionTramites((prevCampos) =>
+        prevCampos.filter((campo) => campo.nombre !== campos.nombre)
+      );
+    }
   };
 
   return (
@@ -111,6 +169,13 @@ const SeccionFormulario = () => {
             valoresEditar={values}
           />
         </Modal>
+      )}
+
+      {!showModalTramiteNuevo && (
+        <TramiteIniciar
+          setShowModalTramiteNuevo={setShowModalTramiteNuevo}
+          instituciones={institucionesList}
+        />
       )}
     </section>
   );

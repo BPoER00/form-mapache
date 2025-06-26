@@ -1,3 +1,4 @@
+// contexts/Notify.js
 import React, { createContext, useState, useContext } from "react";
 
 const NotificationContext = createContext();
@@ -8,13 +9,25 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
   const addNotification = (message, type = "info") => {
-    const id = Date.now();
-    const newNotification = { id, message, type };
-    setNotifications((prev) => [...prev, newNotification]);
+    return new Promise((resolve) => {
+      const id = Date.now();
 
-    setTimeout(() => {
-      removeNotification(id);
-    }, 3000);
+      const newNotification = {
+        id,
+        message,
+        type,
+        resolve: type === "question" ? resolve : null,
+      };
+
+      setNotifications((prev) => [...prev, newNotification]);
+
+      if (type !== "question") {
+        setTimeout(() => {
+          removeNotification(id);
+        }, 3000);
+        resolve();
+      }
+    });
   };
 
   const removeNotification = (id) => {
@@ -22,7 +35,9 @@ export const NotificationProvider = ({ children }) => {
   };
 
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification }}>
+    <NotificationContext.Provider
+      value={{ notifications, addNotification, removeNotification }}
+    >
       {children}
     </NotificationContext.Provider>
   );
