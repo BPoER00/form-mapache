@@ -1,20 +1,21 @@
 "use client";
-import SeccionTramites from "@/components/SeccionTramites";
+import SeccionFormulario from "@/components/SeccionFormulario";
 import Navbar from "@/components/UI/Navbar/Navbar";
 import Toast from "@/components/UI/Toast";
 import Volver from "@/components/UI/Volver";
 import { NotificationProvider } from "@/contexts/Notify";
-import React from "react";
+import React, { use } from "react";
 
-const page = () => {
+const page = (props) => {
+  const params = use(props.params);
   return (
     <NotificationProvider>
       <Navbar />
       <Volver />
 
-      <SeccionTramites />
+      <SeccionFormulario />
+
       <Toast />
-      {/* <Footer /> */}
     </NotificationProvider>
   );
 };

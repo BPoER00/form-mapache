@@ -1,10 +1,25 @@
 import React, { useState } from "react";
 import Modal from "./Globales/Modal";
 import FormularioGeneral from "./Formularios/FormularioGeneral";
+import { useNotification } from "@/contexts/Notify";
 
 const SeccionFormulario = () => {
+  const { addNotification } = useNotification();
   const [showModal, setShowModal] = useState(false);
   const [configuracionTramite, setConfiguracionTramites] = useState([]);
+  const [values, setValues] = useState({});
+
+  const handleEditarCampo = (campos) => {
+    setValues(campos);
+    setShowModal(true);
+  };
+
+  const handleEliminarCampo = (campos) => {
+    addNotification(`el campo: ${campos.label}, fue eliminado`);
+    setConfiguracionTramites((prevCampos) =>
+      prevCampos.filter((campo) => campo.nombre !== campos.nombre)
+    );
+  };
 
   return (
     <section className="w-10/12 flex flex-col justify-center items-center mx-auto my-10 gap-10">
@@ -40,14 +55,14 @@ const SeccionFormulario = () => {
                   <td className="py-2 px-4 flex gap-2">
                     <button
                       type="button"
-                      onClick={() => handleEditarCampo(index)}
+                      onClick={() => handleEditarCampo(campo)}
                       className="text-blue-600 hover:underline text-sm"
                     >
                       Editar
                     </button>
                     <button
                       type="button"
-                      onClick={() => handleEliminarCampo(index)}
+                      onClick={() => handleEliminarCampo(campo)}
                       className="text-red-600 hover:underline text-sm"
                     >
                       Eliminar
@@ -93,6 +108,7 @@ const SeccionFormulario = () => {
             configuracion={configuracionTramite}
             setConfiguracion={setConfiguracionTramites}
             closeModal={setShowModal}
+            valoresEditar={values}
           />
         </Modal>
       )}

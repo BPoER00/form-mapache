@@ -2,17 +2,20 @@ import React, { useState } from "react";
 import ConfiguracionCampos from "./ConfiguracionCampos";
 import { TABS } from "@/constants/reglas-campos";
 
-const FormularioGeneral = ({ configuracion, setConfiguracion, closeModal }) => {
+const FormularioGeneral = ({
+  configuracion,
+  setConfiguracion,
+  closeModal,
+  valoresEditar,
+}) => {
   const [tab, setTab] = useState("Principales");
   const [valores, setValores] = useState({});
 
   const onSubmit = () => {
-    console.log(valores);
     setConfiguracion((prev) => [...prev, valores]);
     closeModal(false);
   };
 
-  // Obtener el tab activo
   const currentTab = TABS.find((item) => item.valor === tab);
 
   return (
@@ -41,6 +44,7 @@ const FormularioGeneral = ({ configuracion, setConfiguracion, closeModal }) => {
             schema={currentTab.schema}
             campos={currentTab.camposFijos}
             extras={currentTab.camposExtras}
+            values={valoresEditar}
           />
         )}
       </article>

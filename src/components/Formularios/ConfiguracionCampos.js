@@ -1,4 +1,4 @@
-import { AutoForm, AutoField, ErrorsField } from "uniforms-antd";
+import { AutoForm, AutoField } from "uniforms-antd";
 import { useEffect, useState } from "react";
 
 const ConfiguracionCampos = ({
@@ -7,8 +7,32 @@ const ConfiguracionCampos = ({
   schema,
   campos,
   extras,
+  values,
 }) => {
   const [tipoCampo, setTipoCampo] = useState("");
+
+  const configureData = (key, value) => {
+    setValores((prev) => {
+      const newState = { ...prev };
+
+      if (key.includes(".")) {
+        const [arrayKey, indexStr] = key.split(".");
+        const index = parseInt(indexStr, 10);
+
+        if (!Array.isArray(newState[arrayKey])) {
+          newState[arrayKey] = [];
+        }
+
+        newState[arrayKey][index] = value;
+      } else {
+        newState[key] = value;
+      }
+
+      return newState;
+    });
+
+    if (key === "tipo") setTipoCampo(value);
+  };
 
   return (
     <section className="w-11/12 flex flex-col justify-center items-center mx-auto my-10">
@@ -17,10 +41,8 @@ const ConfiguracionCampos = ({
       <div className="w-full p-2">
         <AutoForm
           schema={schema}
-          onChange={(key, value) => {
-            setValores((prev) => ({ ...prev, [key]: value }));
-            if (key === "tipo") setTipoCampo(value);
-          }}
+          model={values}
+          onChange={(key, value) => configureData(key, value)}
           showInlineError={false}
           submitField={() => null}
         >

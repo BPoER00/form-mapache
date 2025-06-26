@@ -15,6 +15,15 @@ const camposFijosReglasDependencias = ["reglas"];
 
 const camposFijosReglasPosicionamiento = ["columna", "columnaOffset"];
 
+const camposFijosReglasGenerales = [
+  "tramite-id",
+  "nombre",
+  "label",
+  "slug",
+  "estado",
+  "institucion",
+];
+
 const schemaReglasPrincipales = new ZodBridge({
   schema: z
     .object({
@@ -88,13 +97,20 @@ const schemaPosicionamiento = new ZodBridge({
   }),
 });
 
-const schemaCamposGenerales = new ZodBridge({
-  "tramite-id": z.number().int(),
-  nombre: z.string(),
-  institucion: z.object({
-    id: z.string(),
-  }),
-});
+const camposGeneralesReglaSchemas = (instituciones) => {
+  const schemaCamposGenerales = new ZodBridge({
+    schema: z.object({
+      "tramite-id": z.number().int(),
+      nombre: z.string(),
+      label: z.string(),
+      slug: z.string(),
+      estado: z.boolean(),
+      institucion: z.array(z.enum(instituciones)),
+    }),
+  });
+
+  return schemaCamposGenerales;
+};
 
 const TABS = [
   {
@@ -127,4 +143,4 @@ const TABS = [
   },
 ];
 
-export { TABS, schemaCamposGenerales };
+export { TABS, camposGeneralesReglaSchemas, camposFijosReglasGenerales };
