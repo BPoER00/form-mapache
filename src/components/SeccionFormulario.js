@@ -110,8 +110,6 @@ const SeccionFormulario = () => {
   };
 
   const handleFinalizarTramite = async () => {
-    console.log(configuracionTramite);
-
     const camposGeneralesTramite = localStorage.getItem("tramite-valores");
     const camposTramite = localStorage.getItem("campos-valores");
 
