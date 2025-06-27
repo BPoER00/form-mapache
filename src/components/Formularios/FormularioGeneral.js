@@ -9,6 +9,7 @@ const FormularioGeneral = ({
   closeModal,
   valoresEditar,
   indexConfigure,
+  valoresExtras,
 }) => {
   const [tab, setTab] = useState("Principales");
   const [valores, setValores] = useState(valoresEditar || {});
@@ -67,7 +68,7 @@ const FormularioGeneral = ({
           <ConfiguracionCampos
             setValores={setValores}
             titulo={currentTab.nombre}
-            schema={currentTab.schema}
+            schema={currentTab.schema(valoresExtras)}
             campos={currentTab.camposFijos}
             extras={currentTab.camposExtras}
             values={valoresEditar}

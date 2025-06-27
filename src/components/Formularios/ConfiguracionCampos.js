@@ -16,14 +16,30 @@ const ConfiguracionCampos = ({
       const newState = { ...prev };
 
       if (key.includes(".")) {
-        const [arrayKey, indexStr] = key.split(".");
-        const index = parseInt(indexStr, 10);
+        const parts = key.split(".");
+        const arrayKey = parts[0];
+        const index = parseInt(parts[1], 10);
 
         if (!Array.isArray(newState[arrayKey])) {
           newState[arrayKey] = [];
         }
 
-        newState[arrayKey][index] = value;
+        // Asegurarse de que el índice tenga un objeto inicial
+        if (!newState[arrayKey][index]) {
+          newState[arrayKey][index] = {};
+        }
+
+        if (parts.length === 2) {
+          // Caso simple: variable.0
+          newState[arrayKey][index] = value;
+        } else if (parts.length === 3) {
+          // Caso anidado: variable.0.valor
+          const field = parts[2];
+          if (typeof newState[arrayKey][index] !== "object") {
+            newState[arrayKey][index] = {};
+          }
+          newState[arrayKey][index][field] = value;
+        }
       } else {
         newState[key] = value;
       }
@@ -51,7 +67,6 @@ const ConfiguracionCampos = ({
           ))}
 
           {tipoCampo === "opciones" && extras && <AutoField name="opciones" />}
-          {tipoCampo === "archivo" && extras && <AutoField name="documentos" />}
         </AutoForm>
       </div>
     </section>

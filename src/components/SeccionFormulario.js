@@ -2,17 +2,21 @@ import React, { useEffect, useState } from "react";
 import Modal from "./Globales/Modal";
 import FormularioGeneral from "./Formularios/FormularioGeneral";
 import { useNotification } from "@/contexts/Notify";
-import { instituciones } from "@/constants/objetos";
-import { getAll } from "@/services/Configure-Memory";
+import { instituciones, objetos, tramites } from "@/constants/objetos";
+import { getAll, post, put } from "@/services/Configure-Memory";
 import TramiteIniciar from "./UI/TramiteIniciar";
+import { ordenObjeto } from "@/helpers/ordenar-datos";
+import { useRouter } from "next/navigation";
 
 const SeccionFormulario = () => {
+  const router = useRouter();
   const { addNotification } = useNotification();
   const [showModal, setShowModal] = useState(false);
   const [configuracionTramite, setConfiguracionTramites] = useState([]);
   const [values, setValues] = useState({});
   const [showModalTramiteNuevo, setShowModalTramiteNuevo] = useState(false);
   const [institucionesList, setInstitucionesList] = useState([]);
+  const [opcionesList, setOpcionesList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [dataGeneral, setDataGeneral] = useState({});
   const [index, setIndex] = useState(null);
@@ -23,9 +27,11 @@ const SeccionFormulario = () => {
     const fetchData = async () => {
       try {
         const institucionesData = await getAll(instituciones);
+        const opcionesData = await getAll(objetos);
 
         if (isMounted) {
           setInstitucionesList(institucionesData);
+          setOpcionesList(opcionesData);
           setIsLoading(false);
         }
       } catch (error) {
@@ -103,20 +109,56 @@ const SeccionFormulario = () => {
     setShowModalTramiteNuevo(true);
   };
 
-  const handleFinalizarTramite = () => {
+  const handleFinalizarTramite = async () => {
+    console.log(configuracionTramite);
+
     const camposGeneralesTramite = localStorage.getItem("tramite-valores");
     const camposTramite = localStorage.getItem("campos-valores");
 
-    const jsonCamposGenerales = JSON.parse(camposGeneralesTramite);
-    const jsonCamposTramite = JSON.parse(camposTramite);
+    let jsonCamposGenerales = JSON.parse(camposGeneralesTramite);
+    let jsonCamposTramite = JSON.parse(camposTramite);
+
+    jsonCamposGenerales.institucion = jsonCamposGenerales.institucion.map(
+      (nombre) => {
+        const institucionEncontrada = institucionesList.find(
+          (inst) => inst.label === nombre
+        );
+        return institucionEncontrada ? institucionEncontrada.id : null;
+      }
+    );
+
+    jsonCamposTramite = jsonCamposTramite.map((item) => {
+      if (item.opciones) {
+        const opcionEncontrada = opcionesList.find(
+          (opcion) => opcion.nombre === item.opciones
+        );
+
+        return {
+          ...item,
+          opciones: opcionEncontrada ? opcionEncontrada.id : null,
+        };
+      }
+
+      return item;
+    });
 
     const result = {
       ...jsonCamposGenerales,
       steps: jsonCamposTramite,
     };
 
-    console.log(result);
+    if (result.id) {
+      await put(tramites, result, "id", result.id);
+      addNotification("Objeto editado correctamente", "success");
+    } else {
+      const resultObject = ordenObjeto(result);
+      await post(tramites, resultObject);
+      addNotification("Objeto guardado correctamente", "success");
+    }
+
+    router.push("/tramites");
   };
+
   return (
     <section className="w-10/12 flex flex-col justify-center items-center mx-auto my-10 gap-10">
       <hgroup className="w-full border border-gray-300 rounded-lg p-6 shadow-lg bg-white">
@@ -221,6 +263,7 @@ const SeccionFormulario = () => {
             closeModal={setShowModal}
             valoresEditar={values}
             indexConfigure={{ index, setIndex }}
+            valoresExtras={opcionesList}
           />
         </Modal>
       )}
