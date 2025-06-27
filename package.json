@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "antd": "^5.26.1",
+    "bootstrap": "^5.3.7",
     "clsx": "^2.1.1",
     "common": "gitlab:tio-gt/comerciales/gestion-procesos/common#ebf19dc1a158d772747cb2a9213ba83d0abdb1c1",
     "next": "15.3.4",
@@ -17,6 +18,7 @@
     "react-dom": "^19.0.0",
     "uniforms": "^4.0.0",
     "uniforms-antd": "^4.0.0",
+    "uniforms-bootstrap5": "^4.0.0",
     "uniforms-bridge-zod": "^4.0.0",
     "uuid": "^11.1.0",
     "zod": "^3.25.67"

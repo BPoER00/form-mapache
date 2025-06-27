@@ -63,7 +63,7 @@ const FormularioGeneral = ({
         ))}
       </ul>
 
-      <article className="w-full min-h-96 h-auto p-4 rounded-md">
+      <article className="w-full min-h-96 max-h-[550px] overflow-y-auto h-auto p-4 rounded-md">
         {currentTab && (
           <ConfiguracionCampos
             setValores={setValores}

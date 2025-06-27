@@ -116,14 +116,11 @@ const SeccionFormulario = () => {
     let jsonCamposGenerales = JSON.parse(camposGeneralesTramite);
     let jsonCamposTramite = JSON.parse(camposTramite);
 
-    jsonCamposGenerales.institucion = jsonCamposGenerales.institucion.map(
-      (nombre) => {
-        const institucionEncontrada = institucionesList.find(
-          (inst) => inst.label === nombre
-        );
-        return institucionEncontrada ? institucionEncontrada.id : null;
-      }
+    const institucionEncontrada = institucionesList.find(
+      (inst) => inst.label === jsonCamposGenerales.institucion
     );
+
+    jsonCamposGenerales.institucion = institucionEncontrada.id;
 
     jsonCamposTramite = jsonCamposTramite.map((item) => {
       if (item.opciones) {
@@ -182,48 +179,63 @@ const SeccionFormulario = () => {
       </section>
 
       {configuracionTramite.length > 0 && (
-        <section className="w-10/12 flex flex-col items-start mx-auto my-10 bg-white border border-gray-300 rounded-lg p-6 gap-4">
-          <h3 className="text-xl font-semibold">
-            Lista de campos configurados:
-          </h3>
+        <>
+          {[1, 2, 3].map((step) => {
+            console.log(configuracionTramite);
+            const camposDelStep = configuracionTramite.filter(
+              (campo) => parseInt(campo.step) === step
+            );
 
-          <table className="w-full text-left text-gray-800 mt-4">
-            <thead>
-              <tr className="text-sm font-semibold text-gray-600 border-b">
-                <th className="py-2 px-4">Campo</th>
-                <th className="py-2 px-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {configuracionTramite.map((campo, index) => (
-                <tr
-                  key={index}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="py-2 px-4">
-                    {campo.label || `Campo ${index + 1}`}
-                  </td>
-                  <td className="py-2 px-4 flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleEditarCampo(campo, index)}
-                      className="text-blue-600 hover:underline text-sm"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleEliminarCampo(campo, index)}
-                      className="text-red-600 hover:underline text-sm"
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            if (camposDelStep.length === 0) return null;
 
+            return (
+              <section
+                key={step}
+                className="w-10/12 flex flex-col items-start mx-auto my-10 bg-white border border-gray-300 rounded-lg p-6 gap-4"
+              >
+                <h3 className="text-xl font-semibold">
+                  Campos del Step {step}
+                </h3>
+
+                <table className="w-full text-left text-gray-800 mt-4">
+                  <thead>
+                    <tr className="text-sm font-semibold text-gray-600 border-b">
+                      <th className="py-2 px-4">Campo</th>
+                      <th className="py-2 px-4">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {camposDelStep.map((campo, index) => (
+                      <tr
+                        key={index}
+                        className="border-b hover:bg-gray-50 transition"
+                      >
+                        <td className="py-2 px-4">
+                          {campo.label || `Campo ${index + 1}`}
+                        </td>
+                        <td className="py-2 px-4 flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleEditarCampo(campo, index)}
+                            className="text-blue-600 hover:underline text-sm"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleEliminarCampo(campo, index)}
+                            className="text-red-600 hover:underline text-sm"
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </section>
+            );
+          })}
           <button
             type="button"
             onClick={() => setShowModal(true)}
@@ -232,7 +244,7 @@ const SeccionFormulario = () => {
             <img src="/svg/plus-icon.svg" className="w-5 h-5" alt="plus" />
             <span>Añadir campo</span>
           </button>
-        </section>
+        </>
       )}
 
       {configuracionTramite.length === 0 && (

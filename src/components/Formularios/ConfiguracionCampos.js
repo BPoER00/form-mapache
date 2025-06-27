@@ -1,5 +1,6 @@
-import { AutoForm, AutoField } from "uniforms-antd";
+import { AutoForm, AutoField } from "uniforms-bootstrap5";
 import { useEffect, useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const ConfiguracionCampos = ({
   setValores,
@@ -24,16 +25,13 @@ const ConfiguracionCampos = ({
           newState[arrayKey] = [];
         }
 
-        // Asegurarse de que el índice tenga un objeto inicial
         if (!newState[arrayKey][index]) {
           newState[arrayKey][index] = {};
         }
 
         if (parts.length === 2) {
-          // Caso simple: variable.0
           newState[arrayKey][index] = value;
         } else if (parts.length === 3) {
-          // Caso anidado: variable.0.valor
           const field = parts[2];
           if (typeof newState[arrayKey][index] !== "object") {
             newState[arrayKey][index] = {};

@@ -107,7 +107,7 @@ const camposGeneralesReglaSchemas = (instituciones) => {
       "tramite-id": z.number().int(),
       nombre: z.string(),
       estado: z.boolean(),
-      institucion: z.array(z.enum(instituciones)),
+      institucion: z.enum(instituciones),
     }),
   });
 
