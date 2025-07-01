@@ -21,6 +21,17 @@ const OPCIONES = [
       height: 1000,
     },
   },
+  {
+    nombre: "Deploys",
+    descripcion: "Realiza los deploys por municipalidad o gobernacion",
+    url: "/deploys",
+    imagen: {
+      src: "/img/deploy.png",
+      alt: "deploy",
+      width: 1000,
+      height: 1000,
+    },
+  },
 ];
 
 export { OPCIONES };

@@ -65,6 +65,7 @@ const ConfiguracionCampos = ({
           ))}
 
           {tipoCampo === "opciones" && extras && <AutoField name="opciones" />}
+          {tipoCampo === "opciones" && extras && <AutoField name="carrito" />}
         </AutoForm>
       </div>
     </section>

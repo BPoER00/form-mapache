@@ -18,6 +18,57 @@ const FormularioGeneral = ({
   const onSubmit = () => {
     const { index, setIndex } = indexConfigure;
 
+    const {
+      label,
+      nombre,
+      tipo,
+      grupo,
+      step,
+      opciones,
+      columna,
+      columnaOffset,
+    } = valores;
+
+    const errores = [];
+
+    if (!label || label.trim() === "") {
+      errores.push("El campo 'label' es obligatorio.");
+    }
+
+    if (!nombre || nombre.trim() === "") {
+      errores.push("El campo 'nombre' es obligatorio.");
+    }
+
+    if (!tipo || tipo.trim() === "") {
+      errores.push("El campo 'tipo' es obligatorio.");
+    }
+
+    if (!grupo || grupo.trim() === "") {
+      errores.push("El campo 'grupo' es obligatorio.");
+    }
+
+    if (!step || isNaN(Number(step))) {
+      errores.push("El campo 'step' es obligatorio y debe ser un número.");
+    }
+
+    const sumaColumnas = Number(columna || 0) + Number(columnaOffset || 0);
+    if (sumaColumnas > 12) {
+      errores.push(
+        "La suma de columna y columnaOffset no puede ser mayor a 12."
+      );
+    }
+
+    if (tipo === "opciones") {
+      if (!opciones || opciones.trim() === "") {
+        errores.push("Debe ingresar el nombre del grupo de opciones.");
+      }
+    }
+
+    if (errores.length > 0) {
+      errores.forEach((msg) => addNotification(msg, "error"));
+      return;
+    }
+
     if (index !== null && index !== undefined) {
       setConfiguracion((prev) => {
         const newConfig = [...prev];

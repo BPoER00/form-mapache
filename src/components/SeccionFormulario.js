@@ -181,7 +181,6 @@ const SeccionFormulario = () => {
       {configuracionTramite.length > 0 && (
         <>
           {[1, 2, 3].map((step) => {
-            console.log(configuracionTramite);
             const camposDelStep = configuracionTramite.filter(
               (campo) => parseInt(campo.step) === step
             );

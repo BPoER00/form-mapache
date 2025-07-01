@@ -55,11 +55,8 @@ const SeccionTramites = () => {
     setShowModal(true);
   };
 
-  const obtenerInstitucionesAsignadas = (ids) => {
-    if (!Array.isArray(ids)) return [];
-    return ids
-      .map((id) => institucionesList.find((inst) => inst.id === id))
-      .filter(Boolean);
+  const obtenerInstitucionesAsignadas = (id) => {
+    return institucionesList.find((inst) => inst.id === id);
   };
 
   const handleOpenModal = () => {
@@ -70,19 +67,42 @@ const SeccionTramites = () => {
     const { steps, ...data } = tramite;
     const idTramite = tramite["tramite-id"];
 
-    const institucionesConNombre = data.institucion.map((id) => {
-      const institucion = institucionesList.find((obj) => obj.id === id);
-      return institucion ? institucion.label : idTramite;
-    });
+    const institucion = institucionesList.find(
+      (obj) => obj.id === data.institucion
+    );
 
     const result = {
       ...data,
-      institucion: institucionesConNombre,
+      institucion: institucion.label,
     };
 
     localStorage.setItem("campos-valores", JSON.stringify(steps));
     localStorage.setItem("tramite-valores", JSON.stringify(result));
     router.push(`tramites/${idTramite}`);
+  };
+
+  const renderInstitucionRow = () => {
+    const institucion = obtenerInstitucionesAsignadas(
+      tramiteSeleccionado.institucion
+    );
+
+    return (
+      <tr key={institucion.id}>
+        <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
+          {institucion.nombre}
+        </td>
+        <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
+          {institucion.tipo}
+        </td>
+        <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
+          {institucion.estado ? (
+            <span className="text-green-600 font-medium">Activa</span>
+          ) : (
+            <span className="text-red-500 font-medium">Inactiva</span>
+          )}
+        </td>
+      </tr>
+    );
   };
 
   return (
@@ -225,29 +245,7 @@ const SeccionTramites = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {obtenerInstitucionesAsignadas(
-                    tramiteSeleccionado.institucion
-                  ).map((inst, index) => (
-                    <tr key={index}>
-                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
-                        {inst.nombre}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
-                        {inst.tipo}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-700 whitespace-nowrap">
-                        {inst.estado ? (
-                          <span className="text-green-600 font-medium">
-                            Activa
-                          </span>
-                        ) : (
-                          <span className="text-red-500 font-medium">
-                            Inactiva
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                  {renderInstitucionRow()}
                 </tbody>
               </table>
             </div>

@@ -40,12 +40,8 @@ const TramiteIniciar = ({
       errores.push("Debe indicar un estado (activo o inactivo).");
     }
 
-    if (
-      !valores.institucion ||
-      !Array.isArray(valores.institucion) ||
-      valores.institucion.length === 0
-    ) {
-      errores.push("Debe asignar al menos una institución.");
+    if (!valores.institucion || valores.institucion.trim() === "") {
+      errores.push("Debe asignar una institución.");
     }
 
     if (errores.length > 0) {
@@ -66,6 +62,7 @@ const TramiteIniciar = ({
       setTimeout(() => {
         router.push(`/tramites/${valores["tramite-id"]}`);
       }, 2500);
+      localStorage.removeItem("campos-valores");
     } else {
       addNotification("Trámite actualizado correctamente", "success");
       setShowModalTramiteNuevo(false);

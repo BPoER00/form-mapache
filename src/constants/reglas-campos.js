@@ -43,6 +43,7 @@ const schemaCamposPrincipalesDatosCargados = (opciones) => {
           "opciones",
           "archivo",
           "email",
+          "zona-archivos",
         ]),
         nota: z.string(),
         holder: z.string().optional(),
@@ -50,6 +51,7 @@ const schemaCamposPrincipalesDatosCargados = (opciones) => {
         grupo: z.enum(["datosPersonales", "tramites", "requisitos"]),
         step: z.enum([1, 2, 3]),
         opciones: z.enum(result),
+        carrito: z.boolean(),
       })
       .superRefine((data, ctx) => {
         if (
